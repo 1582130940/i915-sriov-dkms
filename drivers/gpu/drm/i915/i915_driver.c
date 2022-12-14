@@ -827,8 +827,6 @@ i915_driver_create(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 static void i915_virtualization_probe(struct drm_i915_private *i915)
 {
-	dev_info(i915->drm.dev, "i915_virtualization_probe: entry\n");
-
 	GEM_BUG_ON(i915->__mode);
 
 	intel_vgpu_detect(i915);
@@ -836,8 +834,6 @@ static void i915_virtualization_probe(struct drm_i915_private *i915)
 		i915->__mode = I915_IOV_MODE_GVT_VGPU;
 	else
 		i915->__mode = i915_sriov_probe(i915);
-
-	dev_info(i915->drm.dev, "i915_sriov_probe returns: %d\n", i915->__mode);
 
 	GEM_BUG_ON(!i915->__mode);
 

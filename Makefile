@@ -1,3 +1,33 @@
+# SPDX-License-Identifier: GPL-2.0
+#
+# Makefile for the drm device driver.  This driver provides support for the
+# Direct Rendering Infrastructure (DRI) in XFree86 4.1.0 and higher.
+
+# Add a set of useful warning flags and enable -Werror for CI to prevent
+# trivial mistakes from creeping in. We have to do this piecemeal as we reject
+# any patch that isn't warning clean, so turning on -Wall -Wextra (or W=1) we
+# need to filter out dubious warnings.  Still it is our interest
+# to keep running locally with W=1 C=1 until we are completely clean.
+#
+# Note the danger in using -Wall -Wextra is that when CI updates gcc we
+# will most likely get a sudden build breakage... Hopefully we will fix
+# new warnings before CI updates!
+subdir-ccflags-y += -Wno-format-security
+subdir-ccflags-y += -Wno-unused-parameter
+subdir-ccflags-y += -Wno-type-limits
+subdir-ccflags-y += -Wno-missing-field-initializers
+subdir-ccflags-y += -Wno-sign-compare
+subdir-ccflags-y += -Wno-shift-negative-value
+subdir-ccflags-y += $(call cc-disable-warning, unused-but-set-variable)
+subdir-ccflags-y += $(call cc-disable-warning, frame-address)
+subdir-ccflags-$(CONFIG_DRM_I915_WERROR) += -Werror
+
+# Fine grained warnings disable
+CFLAGS_i915_pci.o = $(call cc-disable-warning, override-init)
+CFLAGS_display/intel_fbdev.o = $(call cc-disable-warning, override-init)
+
+subdir-ccflags-y += -I$(srctree)/$(src)
+
 KVER        := $(shell uname -r)
 KBASE       := /lib/modules/$(KVER)
 KSRC        := $(KBASE)/source
@@ -16,8 +46,10 @@ EXTRA_CFLAGS += -DCONFIG_PM -DCONFIG_DEBUG_FS -DCONFIG_PNP -DCONFIG_PROC_FS \
 				-DCONFIG_MMU_NOTIFIER -DCONFIG_DRM_I915_COMPRESS_ERROR \
 				-DCONFIG_COMPAT -DCONFIG_PERF_EVENTS -DCONFIG_PCI_IOV \
 				-DCONFIG_X86 -DCONFIG_ACPI -DCONFIG_DRM_FBDEV_EMULATION \
-				-DCONFIG_PMIC_OPREGION -DCONFIG_SWIOTLB -DCONFIG_DRM_I915_PXP
+				-DCONFIG_PMIC_OPREGION -DCONFIG_SWIOTLB -DCONFIG_DRM_I915_PXP \
+				-DCONFIG_DRM_I915_GVT_KVMGT
 
+# Please keep these build lists sorted!
 
 # core driver code
 i915-y += i915_driver.o \
@@ -343,10 +375,8 @@ i915-$(CONFIG_DRM_I915_SELFTEST) += \
 # virtual gpu code
 i915-y += i915_vgpu.o
 
-obj-$(CONFIG_DRM_I915)           += i915.o
-
-CFLAGS_i915_trace_points.o := -I$(KBUILD_EXTMOD)/drivers/gpu/drm/i915
-
+obj-$(CONFIG_DRM_I915) += i915.o
+obj-$(CONFIG_DRM_I915_GVT_KVMGT) += gvt/kvmgt.o
 
 i915-y := $(addprefix $(DRMD)i915/,$(i915-y))
 
@@ -359,8 +389,8 @@ i915-y := $(addprefix $(DRMD)i915/,$(i915-y))
 # structs and declarations and so forth that we need for the backport to build.
 
 LINUXINCLUDE := \
-    -I$(INC_INCPATH)/trace \
-	-I$(KBUILD_EXTMOD)/drivers/gpu/drm/i915 \
+    -I$(INC_INCPATH) \
+    -I$(KBUILD_EXTMOD)/drivers/gpu/drm/i915 \
     -I$(KBUILD_EXTMOD)/drivers/gpu/drm/i915/gvt \
     $(LINUXINCLUDE)
 

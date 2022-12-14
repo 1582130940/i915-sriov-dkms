@@ -40,7 +40,6 @@
 #include <drm/drm_fourcc.h>
 #include <drm/drm_plane_helper.h>
 #include <drm/drm_rect.h>
-#include <drm/drm_blend.h>
 
 #include "i915_drv.h"
 #include "i915_vgpu.h"

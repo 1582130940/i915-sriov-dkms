@@ -6,7 +6,6 @@
 #include <linux/kernel.h>
 #include <linux/pwm.h>
 #include <linux/string_helpers.h>
-#include <linux/backlight.h>
 
 #include "intel_backlight.h"
 #include "intel_connector.h"

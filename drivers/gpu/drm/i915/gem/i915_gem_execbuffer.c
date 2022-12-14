@@ -6,6 +6,7 @@
 
 #include <linux/dma-resv.h>
 #include <linux/highmem.h>
+#include <linux/intel-iommu.h>
 #include <linux/sync_file.h>
 #include <linux/uaccess.h>
 
