@@ -1,6 +1,6 @@
 # Linux i915 driver with SR-IOV support (dkms module)
 
-Originally from [linux-intel-lts](https://github.com/intel/linux-intel-lts/tree/lts-v5.15.49-adl-linux-221011T100001Z/drivers/gpu/drm/i915)
+Originally from [linux-intel-lts](https://github.com/intel/linux-intel-lts/tree/lts-v5.15.71-adl-linux-221121T044440Z/drivers/gpu/drm/i915)
 
 ## Notice
 
